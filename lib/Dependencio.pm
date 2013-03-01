@@ -2,43 +2,64 @@ package Dependencio;
 
 use strict;
 use warnings;
-use File::Basename;
+use File::Find;
 use Cwd;
-
+use IO::File;
 require Exporter;
 
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(
-checkDeps
-);
-
+our @EXPORT = qw(checkDeps);
 our $VERSION = '0.01';
 
 
-
 sub checkDeps{
-    my $dir  = getcwd;
-    my $path = shift || dirname(__FILE__);
+    my $cwd  = getcwd();
 
-    print STDOUT $dir;
+    print STDOUT "$cwd\n";
+
+    my @dirs = ();
+    push (@dirs,$cwd);
+
+    find(\&wanted, @dirs);
 }
 
+
+sub wanted{
+    #first,declare file types to search module declarations (.pm and .pl)
+    if(-f && m/\.(pm|pl)$/){
+        print  STDOUT "searching modules uses on $File::Find::name\n";
+        my $file = $File::Find::name;
+        my $search = "use ";
+
+        IO::File->input_record_separator($search);
+        my $fh = IO::File->new($file, O_RDONLY)
+            or die 'Could not open file ', $file, ": $!";
+       
+        $fh->getline;
+
+        while ($fh->getline) {
+            print IO::File->input_record_separator
+        }
+
+        $fh->close;
+    }
+}
 1;
 
 
 
 __END__
-# Below is stub documentation for your module. You'd better edit it!
 
 =head1 NAME
 
-Dependencio - Perl extension for blah blah blah
+Dependencio - Perl module to find modules uses recursively in your project, and check if installed,
+if not, install the modules required via cpanm
 
 =head1 SYNOPSIS
 
   use Dependencio;
-  checkDeps($path);
+  checkDeps();
 
 =head1 DESCRIPTION
 
@@ -47,8 +68,7 @@ This module aims to autodetect all the module dependencies recursively for a pro
 
 =head2 EXPORT
 
-None by default.
-
+checkDeps
 
 
 =head1 SEE ALSO
@@ -58,9 +78,6 @@ related modules or operating system documentation (such as man pages
 in UNIX), or any relevant external documentation such as RFCs or
 standards.
 
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
 
 =head1 AUTHOR
 

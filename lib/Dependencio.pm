@@ -22,6 +22,7 @@ sub checkDeps{
     push (@dirs,$cwd);
 
     find(\&openFiles, @dirs);
+    return 1;
 }
 
 

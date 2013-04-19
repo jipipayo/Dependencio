@@ -21,25 +21,27 @@ sub checkDeps{
     my @dirs = ();
     push (@dirs,$cwd);
 
-    find(\&wanted, @dirs);
+    find(\&openFiles, @dirs);
 }
 
 
-sub wanted{
-    #first,declare file types to search module declarations (.pm and .pl)
+sub openFiles{
+    #only open file types to search module declarations (.pm and .pl)
     if(-f && m/\.(pm|pl)$/){
         print  STDOUT "searching modules uses on $File::Find::name\n";
         my $file = $File::Find::name;
-        my $search = "use ";
 
-        IO::File->input_record_separator($search);
-        my $fh = IO::File->new($file, O_RDONLY)
-            or die 'Could not open file ', $file, ": $!";
-       
-        $fh->getline;
+        my $fh = IO::File->new($file, O_RDONLY) or die 'Fuuuuuu! I can not open file ', $file, ": $!";
 
-        while ($fh->getline) {
-            print IO::File->input_record_separator
+        while ( my $line =  $fh->getline() ){ #parsing the lines
+            #remove spaces at beginning and end of line
+            $line=~s/^\s+//;
+            $line=~s/\s+$//;
+            $line=~s/;//;
+
+            while( $line =~ m/(use |require )[A-Z]{1}/g  ){
+                print "$line \n";
+            }
         }
 
         $fh->close;
@@ -53,13 +55,12 @@ __END__
 
 =head1 NAME
 
-Dependencio - Perl module to find modules uses recursively in your project, and check if installed,
-if not, install the modules required via cpanm
+Dependencio - Dumb simple module to find modules dependencies recursively in your project, and check if installed.
+
 
 =head1 SYNOPSIS
 
-  use Dependencio;
-  checkDeps();
+
 
 =head1 DESCRIPTION
 

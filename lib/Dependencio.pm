@@ -35,13 +35,16 @@ sub openFiles{
         my $fh = IO::File->new($file, O_RDONLY) or die 'Fuuuuuu! I can not open file ', $file, ": $!";
 
         while ( my $line =  $fh->getline() ){ #parsing the lines
-            #remove spaces at beginning and end of line
+            #remove spaces at beginning and end of line and semicolon
             $line=~s/^\s+//;
             $line=~s/\s+$//;
             $line=~s/;//;
 
+
             while( $line =~ m/(use |require )[A-Z]{1}/g  ){
-                print "$line \n";
+                $line=~s/(use |require )//;
+                print STDOUT "$line \n";
+                eval { require  $line;  };
             }
         }
 

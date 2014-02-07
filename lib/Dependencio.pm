@@ -5,9 +5,8 @@ use warnings;
 use File::Find;
 use Cwd;
 use IO::File;
+use Module::Load;
 require Exporter;
-
-
 our @ISA = qw(Exporter);
 our @EXPORT = qw(checkDeps);
 our $VERSION = '0.01';
@@ -16,35 +15,34 @@ our $VERSION = '0.01';
 sub checkDeps{
     my $cwd  = getcwd();
 
-    print STDOUT "$cwd\n";
-
     my @dirs = ();
     push (@dirs,$cwd);
 
-    find(\&openFiles, @dirs);
+    find(\&_openFiles, @dirs);
     return 1;
 }
 
 
-sub openFiles{
+sub _openFiles{
     #only open file types to search module declarations (.pm and .pl)
     if(-f && m/\.(pm|pl)$/){
-        print  STDOUT "searching modules uses on $File::Find::name\n";
+        print  STDOUT "* checking dependecies on $File::Find::name\n";
         my $file = $File::Find::name;
+        my $fh = IO::File->new($file, O_RDONLY) or die 'I can not open file ', $file, ": $!";
 
-        my $fh = IO::File->new($file, O_RDONLY) or die 'Fuuuuuu! I can not open file ', $file, ": $!";
-
-        while ( my $line =  $fh->getline() ){ #parsing the lines
+        while ( my $line =  $fh->getline() ){
             #remove spaces at beginning and end of line and semicolon
             $line=~s/^\s+//;
             $line=~s/\s+$//;
             $line=~s/;//;
 
-
             while( $line =~ m/(use |require )[A-Z]{1}/g  ){
                 $line=~s/(use |require )//;
-                print STDOUT "$line \n";
-                eval { require  $line;  };
+
+                eval{ load $line };
+                if($@) {
+                    warn "Dependencio says: module $line not found\n";
+                }
             }
         }
 
@@ -59,7 +57,7 @@ __END__
 
 =head1 NAME
 
-Dependencio - Dumb simple module to find modules dependencies recursively in your project, and check if installed.
+Dependencio - Simple utility to find perl modules dependencies recursively in your project.
 
 
 =head1 SYNOPSIS
@@ -68,7 +66,10 @@ Dependencio - Dumb simple module to find modules dependencies recursively in you
 
 =head1 DESCRIPTION
 
-This module aims to autodetect all the module dependencies recursively for a project.
+This module aims to autodetect all the module dependencies recursively in a project.
+To be used as standalone application to be part of your continous integration to deploy.
+Could be added the execution of Dependencio as a post hook git, jenkins, etc.
+
 
 
 =head2 EXPORT

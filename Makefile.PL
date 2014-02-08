@@ -4,9 +4,9 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     NAME              => 'Dependencio',
-    VERSION_FROM      => 'lib/Dependencio.pm', # finds $VERSION
+    VERSION_FROM      => 'App/Dependencio.pm', # finds $VERSION
     PREREQ_PM         => {}, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM  => 'lib/Dependencio.pm', # retrieve abstract from module
+      (ABSTRACT_FROM  => 'App/Dependencio.pm', # retrieve abstract from module
        AUTHOR         => 'dani remeseiro <daniel.remeseiro@gmail.com>') : ()),
 );

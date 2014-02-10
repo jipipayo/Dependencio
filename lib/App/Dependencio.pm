@@ -8,7 +8,7 @@ use Cwd;
 use IO::File;
 use Term::ANSIColor;
 use Module::Load;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 

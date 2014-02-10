@@ -1,7 +1,7 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Simple utility to find perl modules dependencies recursively in your project.",
    "author" : [
-      "Daniel Remeseiro <daniel.remeseiro@gmail.com>"
+      "dani remeseiro, <daniel.remeseiro at gmail dot com<gt>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v0.11.0, CPAN::Meta::Converter version 2.133380",
@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
-   "name" : "Dependencio",
+   "name" : "App-Dependencio",
    "no_index" : {
       "directory" : [
          "t",
@@ -43,7 +43,11 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008005"
+            "Cwd" : "0",
+            "File::Find" : "0",
+            "IO::File" : "0",
+            "Term::ANSIColor" : "0",
+            "perl" : "5.008001"
          }
       },
       "test" : {
@@ -53,5 +57,19 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "0.01"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/jipipayo/Dependencio/issues"
+      },
+      "homepage" : "https://github.com/jipipayo/Dependencio",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/jipipayo/Dependencio.git",
+         "web" : "https://github.com/jipipayo/Dependencio"
+      }
+   },
+   "version" : "0.02",
+   "x_contributors" : [
+      "Daniel Remeseiro <daniel.remeseiro@gmail.com>"
+   ]
 }

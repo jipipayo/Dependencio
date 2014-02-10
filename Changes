@@ -1,6 +1,6 @@
-Revision history for Perl extension Dependencio.
+Revision history for Perl extension Dependencio
 
-0.01  Thu Jan  3 17:23:39 2013
-	- original version; created by h2xs 1.23 with options
-		-XA -n Dependencio
+{{$NEXT}}
+
+    - original version
 

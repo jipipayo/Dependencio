@@ -1,6 +1,13 @@
+.travis.yml
+Build.PL
 Changes
-Makefile.PL
-MANIFEST
-README
-t/Dependencio.t
-lib/Dependencio.pm
+cpanfile
+lib/App/Dependencio.pm
+LICENSE
+MANIFEST			This list of files
+META.json
+minil.toml
+README.md
+script/dependencio
+t/00_compile.t
+t/Tests.pm

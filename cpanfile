@@ -4,6 +4,7 @@ requires 'File::Find';
 requires 'Cwd';
 requires 'IO::File';
 requires 'Term::ANSIColor';
+requires 'App::Cmd::Simple';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';

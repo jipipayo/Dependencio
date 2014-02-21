@@ -8,7 +8,7 @@ use Cwd;
 use IO::File;
 use Term::ANSIColor;
 use Module::Load;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 
@@ -17,6 +17,7 @@ sub opt_spec {
     [ "testdirs|t",  "exclude dir named t (tests)" ],
     [ "verbose|v",  "verbose output"],
     [ "cpanm|c",  "automatic cpanm install missing modules"],
+    [ "cpanm|f",  "outputs a list of modules to a cpanfile file"],
     [ "help|h",  "this help menu"],
   );
 }
@@ -69,6 +70,11 @@ sub _openFiles{
             $line=~s/^\s+//;
             $line=~s/\s+$//;
             $line=~s/;//;
+
+            #remove comments at the end of line like: use Foo::Bar; #this is foo
+            $line=~s/#.*$//;
+            #remove exports of func modules like: use Foo::Bar qw(meh)
+            $line=~s/qw\(.*$//;
 
             while( $line =~ m/(use |require )[A-Z]{1}/g  ){
                 $line=~s/(use |require )//;

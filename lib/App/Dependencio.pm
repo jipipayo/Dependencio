@@ -7,35 +7,36 @@ use File::Find;
 use Cwd;
 use IO::File;
 use Term::ANSIColor;
+use Text::Trim;
 use Module::Load;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 
 sub opt_spec {
-  return (
-    [ "testdirs|t",  "exclude dir named t (tests)" ],
-    [ "verbose|v",  "verbose output"],
-    [ "cpanm|c",  "automatic cpanm install missing modules"],
-    [ "cpanm|f",  "outputs a list of modules to a cpanfile file"],
-    [ "help|h",  "this help menu"],
-  );
+    return (
+        [ "testdirs|t",  "exclude dir named t (tests)" ],
+        [ "verbose|v",  "verbose output"],
+        [ "cpanm|c",  "automatic cpanm install missing modules"],
+        # [ "cpanfile|f",  "outputs a list of modules to a cpanfile file"],
+        [ "help|h",  "this help menu"],
+    );
 }
 
 
 
 sub validate_args {
-  my ($self, $opt, $args) = @_;
-  $self->usage_error("Bad command") if @$args;
-  $self->usage if $opt->{help};
+    my ($self, $opt, $args) = @_;
+    $self->usage_error("Bad command") if @$args;
+    $self->usage if $opt->{help};
 }
 
 
 
 sub execute {
-  my ($self, $opt, $args) = @_;
-  our $opts = $opt;
-  $self->checkDeps;
+    my ($self, $opt, $args) = @_;
+    our $opts = $opt;
+    $self->checkDeps;
 }
 
 
@@ -57,7 +58,7 @@ sub _openFiles{
     my $dir = $cwd.'/t';
     my $tests = 1;
     if( $dir eq $File::Find::dir and $opts->{testdirs}  ){
-       $tests = 0;
+        $tests = 0;
     };
     #only open file types to search module declarations (.pm and .pl)
     if(-f && m/\.(pm|pl)$/ and $tests == 1){
@@ -66,19 +67,18 @@ sub _openFiles{
         my $fh = IO::File->new($file, O_RDONLY) or die 'I can not open file ', $file, ": $!";
 
         while ( my $line =  $fh->getline() ){
+            #remove comments at the end of line like: use Foo::Bar; #this is foo
+            $line=~s/#.*$//;
+            #remove exports of func modules like: use Foo::Bar qw(meh)
+            $line=~s/qw\(.*$//;
             #remove spaces at beginning and end of line and semicolon
             $line=~s/^\s+//;
             $line=~s/\s+$//;
             $line=~s/;//;
 
-            #remove comments at the end of line like: use Foo::Bar; #this is foo
-            $line=~s/#.*$//;
-            #remove exports of func modules like: use Foo::Bar qw(meh)
-            $line=~s/qw\(.*$//;
-
             while( $line =~ m/(use |require )[A-Z]{1}/g  ){
                 $line=~s/(use |require )//;
-
+                $line = trim($line);
                 eval{ load $line };
                 if($@) {
                     print STDOUT colored ['bright_red'], "Dependencio says: module $line not found\n";

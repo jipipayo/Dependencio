@@ -5,13 +5,14 @@ use strict;
 use warnings;
 use File::Find;
 use Cwd;
+use Data::Dumper;
 use IO::File;
 use Term::ANSIColor;
 use Text::Trim;
 use Module::Load;
 our $VERSION = '0.05';
 
-
+my @mods_not_found = ();
 
 sub opt_spec {
     return (
@@ -45,9 +46,20 @@ sub checkDeps{
     my ($self, $opt) = @_;
     our $cwd  = getcwd();
     my @dirs = ();
+    our $opts;
     push (@dirs,$cwd);
 
+    print Dumper(@mods_not_found);
+    print STDOUT colored ['bright_blue'], "Dependencio says: searching modules...\n";
     find(\&_openFiles, @dirs);
+
+
+
+    foreach my $mod_not_found (@mods_not_found){
+        print STDOUT colored ['bright_red'], "Dependencio says: module $mod_not_found not found\n";
+        system "cpanm $mod_not_found" if $opts->{cpanm};
+
+    }
 }
 
 
@@ -60,11 +72,15 @@ sub _openFiles{
     if( $dir eq $File::Find::dir and $opts->{testdirs}  ){
         $tests = 0;
     };
+
+
+
     #only open file types to search module declarations (.pm and .pl)
     if(-f && m/\.(pm|pl)$/ and $tests == 1){
         print STDOUT "* checking dependecies on $File::Find::name\n" if $opts->{verbose};
         my $file = $File::Find::name;
         my $fh = IO::File->new($file, O_RDONLY) or die 'I can not open file ', $file, ": $!";
+
 
         while ( my $line =  $fh->getline() ){
             #remove comments at the end of line like: use Foo::Bar; #this is foo
@@ -81,10 +97,10 @@ sub _openFiles{
                 $line = trim($line);
                 eval{ load $line };
                 if($@) {
-                    print STDOUT colored ['bright_red'], "Dependencio says: module $line not found\n";
-                    system "cpanm $line" if $opts->{cpanm};
+                    push( @mods_not_found, $line) unless grep{$_ eq $line} @mods_not_found;
                 }
             }
+
         }
 
         $fh->close;

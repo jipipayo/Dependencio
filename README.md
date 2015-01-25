@@ -1,6 +1,8 @@
-# NAME
+![Travis build status](https://travis-ci.org/jipipayo/Dependencio.svg?branch=master "Travis Build Status")
 
+# NAME
 Dependencio - Simple utility to find perl modules dependencies recursively in your project.
+
 
 # SYNOPSIS
 

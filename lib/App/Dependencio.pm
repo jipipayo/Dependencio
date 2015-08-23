@@ -60,6 +60,9 @@ sub checkDeps{
         system "cpanm $mod_not_found" if $opts->{cpanm};
 
     }
+    
+    exit -1 if @mods_not_found;
+    
 }
 
 

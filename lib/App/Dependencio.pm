@@ -10,17 +10,16 @@ use IO::File;
 use Term::ANSIColor;
 use Text::Trim;
 use Module::Load;
-our $VERSION = '0.06';
-
+our $VERSION = '0.07';
 my @mods_not_found = ();
 
 sub opt_spec {
     return (
-        [ "testdirs|t",  "exclude dir named t (tests)" ],
-        [ "verbose|v",  "verbose output"],
-        [ "cpanm|c",  "automatic cpanm install missing modules"],
+        [ "testdirs|t",  "Exclude dir named t (tests)" ],
+        [ "verbose|v",  "Verbose output"],
+        [ "cpanm|c",  "Automatic cpanm install missing modules"],
         # [ "cpanfile|f",  "outputs a list of modules to a cpanfile file"],
-        [ "help|h",  "this help menu"],
+        [ "help|h",  "This help menu. (i am dependencio version $VERSION)"],
     );
 }
 
@@ -49,7 +48,7 @@ sub checkDeps{
     our $opts;
     push (@dirs,$cwd);
 
-    print Dumper(@mods_not_found);
+    #print Dumper(@mods_not_found);
     print STDOUT colored ['bright_blue'], "Dependencio says: searching modules...\n";
     find(\&_openFiles, @dirs);
 
@@ -60,9 +59,9 @@ sub checkDeps{
         system "cpanm $mod_not_found" if $opts->{cpanm};
 
     }
-    
+
     exit -1 if @mods_not_found;
-    
+
 }
 
 
@@ -75,7 +74,6 @@ sub _openFiles{
     if( $dir eq $File::Find::dir and $opts->{testdirs}  ){
         $tests = 0;
     };
-
 
 
     #only open file types to search module declarations (.pm and .pl)
@@ -121,7 +119,12 @@ Dependencio - Simple utility to find perl modules dependencies recursively in yo
 
 
 =head1 SYNOPSIS
+cd yourawesemeproject
+now run...
+dependencio
 
+this will read recursively into your project evaluating all the modules, if they are not installed, dependecio will warn you.
+if you run 'dependencio -c', automagically will try to install the missing modules via cpanm
 
 
 =head1 DESCRIPTION
@@ -147,11 +150,11 @@ standards.
 
 =head1 AUTHOR
 
-dani remeseiro, E<lt>daniel.remeseiro at gmail dot com<gt>
+dani remeseiro, E<lt>jipipayo at cpan dot org<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by dani remeseiro
+Copyright (C) 2015 by dani remeseiro
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,

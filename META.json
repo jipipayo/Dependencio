@@ -44,10 +44,11 @@
          "requires" : {
             "App::Cmd::Simple" : "0",
             "Cwd" : "0",
+            "Data::Printer" : "0",
             "File::Find" : "0",
-            "IO::File" : "0",
+            "List::MoreUtils" : "0",
+            "Module::Extract::Use" : "0",
             "Term::ANSIColor" : "0",
-            "Text::Trim" : "0",
             "perl" : "5.008001"
          }
       },
@@ -69,7 +70,7 @@
          "web" : "https://github.com/jipipayo/Dependencio"
       }
    },
-   "version" : "0.08",
+   "version" : "0.09",
    "x_contributors" : [
       "natlibfi-arlehiko <natlibfi-arlehiko@users.noreply.github.com>",
       "jipipayo <daniel.remeseiro@gmail.com>"

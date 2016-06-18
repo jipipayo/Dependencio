@@ -9,7 +9,7 @@ use Term::ANSIColor;
 use List::MoreUtils qw(uniq);
 use Module::Extract::Use;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 my @mods_list = ();
 my @mods_not_found = ();
 

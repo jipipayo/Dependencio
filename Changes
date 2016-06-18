@@ -12,4 +12,6 @@ Revision history for Perl extension Dependencio
 
 0.07 2015-08-24T17:54:58Z
     -send non zero output to shell if no dependencies achieved
+0.09 2016-06-18T14:27:34Z
+    -now the module scans performed by Module::Extract::Use
 

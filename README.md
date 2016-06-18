@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/jipipayo/Dependencio.svg?branch=master)](https://travis-ci.org/jipipayo/Dependencio)
-
 # NAME
 
 Dependencio - Simple utility to find perl modules dependencies recursively in your project.
@@ -22,21 +20,13 @@ Could be added the execution of Dependencio as a post hook git, jenkins, etc.
 
 checkDeps
 
-# SEE ALSO
-
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
 # AUTHOR
 
-dani remeseiro, <jipipayo at cpan dot org<gt>
+dani remeseiro, &lt;jipipayo at cpan dot org&lt;gt>
 
 # COPYRIGHT AND LICENSE
 
 Copyright (C) 2015 by dani remeseiro
-
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,
 at your option, any later version of Perl 5 you may have available.

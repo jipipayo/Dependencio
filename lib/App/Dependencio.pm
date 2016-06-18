@@ -1,16 +1,16 @@
 package App::Dependencio;
 use base qw(App::Cmd::Simple);
-
 use strict;
 use warnings;
 use File::Find;
 use Cwd;
-use Data::Dumper;
-use IO::File;
+use Data::Printer;
 use Term::ANSIColor;
-use Text::Trim;
-use Module::Load;
-our $VERSION = '0.07';
+use List::MoreUtils qw(uniq);
+use Module::Extract::Use;
+
+our $VERSION = '0.08';
+my @mods_list = ();
 my @mods_not_found = ();
 
 sub opt_spec {
@@ -18,7 +18,7 @@ sub opt_spec {
         [ "testdirs|t",  "Exclude dir named t (tests)" ],
         [ "verbose|v",  "Verbose output"],
         [ "cpanm|c",  "Automatic cpanm install missing modules"],
-        # [ "cpanfile|f",  "outputs a list of modules to a cpanfile file"],
+        # [ "cpanfile|f",  "outputs a list of modules to a cpanfile file"], #TODO
         [ "help|h",  "This help menu. (i am dependencio version $VERSION)"],
     );
 }
@@ -48,20 +48,17 @@ sub checkDeps{
     our $opts;
     push (@dirs,$cwd);
 
-    #print Dumper(@mods_not_found);
-    print STDOUT colored ['bright_blue'], "Dependencio says: searching modules...\n";
+    print STDOUT colored ['bright_blue'], "Searching modules dependencies recursively from $cwd \n";
     find(\&_openFiles, @dirs);
 
-
-
-    foreach my $mod_not_found (@mods_not_found){
-        print STDOUT colored ['bright_red'], "Dependencio says: module $mod_not_found not found\n";
+    #p(@mods_not_found);
+    foreach my $mod_not_found (uniq(@mods_not_found)){
+        print STDOUT colored ['bright_red'], "module $mod_not_found not found\n";
         system "cpanm $mod_not_found" if $opts->{cpanm};
 
     }
 
-    exit -1 if @mods_not_found;
-
+    exit -1 if @mods_not_found or print STDOUT colored ['bright_green'], "success! all dependencies met...\n";
 }
 
 
@@ -71,40 +68,28 @@ sub _openFiles{
     our $cwd;
     my $dir = $cwd.'/t';
     my $tests = 1;
-    if( $dir eq $File::Find::dir and $opts->{testdirs}  ){
-        $tests = 0;
-    };
-
+    if( $dir eq $File::Find::dir and $opts->{testdirs} ){ $tests = 0; };
 
     #only open file types to search module declarations (.pm and .pl)
     if(-f && m/\.(pm|pl)$/ and $tests == 1){
         print STDOUT "* checking dependecies on $File::Find::name\n" if $opts->{verbose};
         my $file = $File::Find::name;
-        my $fh = IO::File->new($file, O_RDONLY) or die 'I can not open file ', $file, ": $!";
 
+        my $extractor = Module::Extract::Use->new;
+        @mods_list = $extractor->get_modules($file);
 
-        while ( my $line =  $fh->getline() ){
-            #remove comments at the end of line like: use Foo::Bar; #this is foo
-            $line=~s/#.*$//;
-            #remove exports of func modules like: use Foo::Bar qw(meh)
-            $line=~s/qw\(.*$//;
-            #remove spaces at beginning and end of line and semicolon
-            $line=~s/^\s+//;
-            $line=~s/\s+$//;
-            $line=~s/;//;
-
-            while( $line =~ m/(use |require )[A-Z]{1}/g  ){
-                $line=~s/(use |require )//;
-                $line = trim($line);
-                eval{ load $line };
-                if($@) {
-                    push( @mods_not_found, $line) unless grep{$_ eq $line} @mods_not_found;
+        foreach my $module  (@mods_list) {
+            if($module =~ /\p{Uppercase}/){ #do not eval things like "warnings","strict",etc (at least one uppercase)
+                my $path = $module. ".pm";
+                $path =~ s{::}{/}g;
+                eval {require $path } or
+                do {
+                   my $error = $@;
+                   push( @mods_not_found, $module) unless grep{$_ eq $module} @mods_not_found;
                 }
             }
 
         }
-
-        $fh->close;
     }
 }
 1;
@@ -140,14 +125,6 @@ Could be added the execution of Dependencio as a post hook git, jenkins, etc.
 checkDeps
 
 
-=head1 SEE ALSO
-
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-
 =head1 AUTHOR
 
 dani remeseiro, E<lt>jipipayo at cpan dot org<gt>
@@ -155,7 +132,6 @@ dani remeseiro, E<lt>jipipayo at cpan dot org<gt>
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2015 by dani remeseiro
-
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,
 at your option, any later version of Perl 5 you may have available.

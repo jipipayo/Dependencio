@@ -1,3 +1,6 @@
+<a href="https://travis-ci.org/jipipayo/Dependencio"><img src="https://travis-ci.org/jipipayo/Dependencio.svg?branch=master"></a>
+
+
 # NAME
 
 Dependencio - Simple utility to find perl modules dependencies recursively in your project.

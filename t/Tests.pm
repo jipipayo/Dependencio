@@ -4,6 +4,7 @@ use strict; #this should be removed on parsing
 use warnings; #also removed on parsing
 use Tests::Lol::Cat; #some unexistent modules
 use Tests::Nyan::Cat;
+use Tests::Nyan::Cat;#yes, twice to test if appears only once in the parsing
 use Tests::Super::Powers;
 
 #add some weird forms of modules to clean

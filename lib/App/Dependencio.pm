@@ -8,7 +8,6 @@ use Cwd;
 use Data::Printer;
 use Term::ANSIColor;
 use Module::Extract::Use;
-use Module::CPANfile;
 
 our $VERSION = '0.10';
 my $cwd;

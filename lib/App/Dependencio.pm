@@ -14,7 +14,7 @@ my $cwd;
 my $opts;
 my @mods_required = ();
 my @mods_not_found = ();
-
+my $mods_in_cpanfile = {};
 
 sub opt_spec {
     return (
@@ -53,7 +53,7 @@ sub checkDeps{
     find(\&_scan_files, @dirs);
 
     foreach my $mod_not_found (@mods_not_found){
-        print STDOUT colored ['bright_red'], "module $mod_not_found not found\n";
+        print STDOUT colored ['bright_red'], "required module $mod_not_found not found\n";
         system "cpanm $mod_not_found" if $opts->{install};
 
     }
@@ -78,15 +78,21 @@ sub _parse_cpanfile{
     my ($self,$cpanfile) = @_;
     my $filec = IO::File->new($cpanfile, O_RDONLY) or die 'I can not open file ', $cpanfile, ": $!";
 
-    while ( my $line = $filec->getline() ){
-            $line=~ s/\'([^']*)\'/$1/m;
-            $line=~s/^\s+//;
-            $line=~s/;//;
-            while( $line =~ m/requires/g ){
-                $line =~ s/requires //;
-                print STDOUT $line;
+    while ( my $modstring = $filec->getline() ){
+            $modstring=~ s/\'([^']*)\'/$1/m;
+            $modstring=~s/^\s+//;
+            $modstring=~s/;//;
+            while( $modstring =~ m/requires/g ){
+                $modstring =~ s/requires //;
+                for($modstring){
+                     my($k,$v) = split /,/;
+                    $mods_in_cpanfile->{$k} = $v;
+                }
+                #print STDOUT $line;
+
             }
     }
+    p($mods_in_cpanfile);
 }
 
 

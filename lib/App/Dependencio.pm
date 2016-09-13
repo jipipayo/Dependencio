@@ -85,11 +85,10 @@ sub _parse_cpanfile{
             while( $modstring =~ m/requires/g ){
                 $modstring =~ s/requires //;
                 for($modstring){
-                     my($k,$v) = split /,/;
-                    $mods_in_cpanfile->{$k} = $v;
+                     my($mod_name,$mod_version) = split /,/;
+                    $mods_in_cpanfile->{$mod_name} = $mod_version;
                 }
                 #print STDOUT $line;
-
             }
     }
     p($mods_in_cpanfile);
